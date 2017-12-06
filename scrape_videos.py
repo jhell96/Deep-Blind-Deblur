@@ -106,10 +106,10 @@ if __name__ == "__main__":
 	
 	path = "./"
 	categories = sorted(category_ids.keys())
-	for category in categories[:2]:
+	for category in categories:
 		directory = os.path.join(path, category)
 		if not os.path.exists(directory):
 		    os.makedirs(directory)
 
-		get_category(category_ids[category], 1, directory)
+		get_category(category_ids[category], 50, directory)
 		print("Finished category", category + "...")
