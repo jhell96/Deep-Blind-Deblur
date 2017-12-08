@@ -17,11 +17,18 @@ def get_category(cat_id, num_to_get, path=None):
 	i = 0
 	while num_downloaded < num_to_get:
 		vid_id = id_list[i]
-		result = get_video(vid_id, tag=cat_id+"_"+str(num_downloaded), path=path)
+		result = "failure"
+		try:
+
+			result = get_video(vid_id, tag=cat_id+"_"+str(num_downloaded), path=path)
+		except Exception as e:
+			print("Failure:", vid_id, cat_id, i) 
+			print(e)
+
 		if (result == "success"):
 			num_downloaded += 1
 
-		print(num_downloaded, "download")
+		print(num_downloaded, "download,", i, "total")
 		i+=1
 
 
@@ -104,7 +111,7 @@ if __name__ == "__main__":
 		"walt_disney_world":"09b1k"
 	}
 	
-	path = "./"
+	path = "../disk/videos"
 	categories = sorted(category_ids.keys())
 	for category in categories:
 		directory = os.path.join(path, category)
