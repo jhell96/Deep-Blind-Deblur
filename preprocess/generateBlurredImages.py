@@ -10,12 +10,12 @@ target_directory = 'targets'
 blurred_directory = 'blurred'
 
 
-def get_blurred_images(video_file_path, num_samples, blurring_param):
+def get_blurred_images(video_file_path, average_frames):
 	'''
 	Parameters:
 		- video_file_path: path to .mp4 video file
 		- num_samples: Number of samples to extract uniformly from the video
-		- blurring param: Number of frames to average over
+		- average_frames: Number of frames to average over
 
 	Returns:
 		- images
@@ -25,12 +25,14 @@ def get_blurred_images(video_file_path, num_samples, blurring_param):
 	video_capture = cv2.VideoCapture(video_file_path)
 	video_framecount = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_indicies = [i for i in range(video_framecount)]
+	num_samples = video_framecount // average_frames
 	target_frame_indicies = [video_framecount // num_samples * i for i in range(num_samples + 1)]
+
 
 	for i in range(len(target_frame_indicies)):
 		video_capture.set(1, target_frame_indicies[i]);
 		
-		# GET THE TARGET FRAME
+		# reading in the target frame
 		# read the target frame in the video
 		success, target_frame = video_capture.read()
 
@@ -52,6 +54,14 @@ def get_blurred_images(video_file_path, num_samples, blurring_param):
 				print (j, inv_frame.shape)
 				blurred_imgs.append(inv_frame)
 
+			# iterate through the blurred_imgs list and check for cut frames
+			differences = []
+			for k in range(len(blurred_imgs) - 1): 
+				diff = abs(blurred_imgs[k] - blurred_imgs[k+1])
+				differences.append(diff)
+			print (max(differences))
+				
+
 			# iterate through all the inverse gamma'd frames, and take the summation and then the average
 			print("*********")
 			summation_of_frames= sum(blurred_imgs)/len(blurred_imgs)
@@ -65,7 +75,7 @@ def get_blurred_images(video_file_path, num_samples, blurring_param):
 			# store the blurred image as a jpg in blurred_directory
 			cv2.imwrite(os.path.join(blurred_directory, "blurred_img%d.jpg" % frame_indicies[i]), blurred_img)
 
-get_blurred_images(video, 10, 10)
+# get_blurred_images(video, 73)
 
 
 
