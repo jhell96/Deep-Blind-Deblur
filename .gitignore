@@ -8,6 +8,8 @@
 *.so
 *.h5
 
+model/deblurring-master/data/
+
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source
