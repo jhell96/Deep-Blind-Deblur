@@ -111,12 +111,13 @@ if __name__ == "__main__":
 		"walt_disney_world":"09b1k"
 	}
 	
-	path = "../disk/videos"
+	path = "videos"
 	categories = sorted(category_ids.keys())
 	for category in categories:
-		directory = os.path.join(path, category)
+		# directory = os.path.join(path, category)
+		directory = path
 		if not os.path.exists(directory):
 		    os.makedirs(directory)
 
-		get_category(category_ids[category], 50, directory)
+		get_category(category_ids[category], 5, directory)
 		print("Finished category", category + "...")

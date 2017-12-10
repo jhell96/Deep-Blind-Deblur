@@ -2,15 +2,7 @@ import numpy as np
 import cv2
 import os
 
-# path to video file
-video = "video.mp4"
-
-# make sure these directories exist
-target_directory = 'targets'
-blurred_directory = 'blurred'
-
-
-def get_blurred_images(video_file_path, average_frames):
+def get_blurred_images(video_file_path, average_frames, num_samples):
 	'''
 	Parameters:
 		- video_file_path: path to .mp4 video file
@@ -25,57 +17,62 @@ def get_blurred_images(video_file_path, average_frames):
 	video_capture = cv2.VideoCapture(video_file_path)
 	video_framecount = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
 	frame_indicies = [i for i in range(video_framecount)]
-	num_samples = video_framecount // average_frames
-	target_frame_indicies = [video_framecount // num_samples * i for i in range(num_samples + 1)]
+	target_frame_indicies = np.random.choice(video_framecount - average_frames - 1, num_samples)
 
 
-	for i in range(len(target_frame_indicies)):
-		video_capture.set(1, target_frame_indicies[i]);
+	for sample_number, target_index in enumerate(target_frame_indicies):
+
+		blurred_imgs = []
+		for frame_index in range(target_index, target_index + average_frames):
+			# apply inverse gamma to each frame 
+			# gamma function: g(x) = x^(1/2.2) 
+			# inverse gamma function (according to wolfram alpha): g(x)^-1 = x^2.2
+			video_capture.set(1, frame_index)
+			success, layover_frame = video_capture.read()
+
+			inv_gamma = lambda x: x**2.2
+			inv_func = np.vectorize(inv_gamma)
+			inv_frame = inv_func(layover_frame)
+			blurred_imgs.append(inv_frame)	
+
+		# iterate through all the inverse gamma'd frames, and take the summation and then the average
+		summation_of_frames= sum(blurred_imgs)/len(blurred_imgs)
+
+		# apply gamma function on this summation average
+		gamma = lambda y: y**(1/2.2)
+		func = np.vectorize(gamma)
+		blurred_img = func(summation_of_frames)
+
+
+		video_capture.set(1, target_index);
 		
 		# reading in the target frame
 		# read the target frame in the video
 		success, target_frame = video_capture.read()
 
+		video_name = os.path.basename(video_file_path).split('.')[0]
+
 		# store the target frame image as a jpg in target_directory
-		cv2.imwrite(os.path.join(target_directory, "target_frame%d.jpg" % frame_indicies[i]), target_frame)
+		cv2.imwrite(os.path.join(target_directory, video_name + "_target_%d.jpg" % sample_number), target_frame)
 
-		if (target_frame_indicies[i] != target_frame_indicies[-1]):
-			blurred_imgs = []
-			for j in range(target_frame_indicies[i], target_frame_indicies[i+1], 1):
-				# apply inverse gamma to each frame 
-				# gamma function: g(x) = x^(1/2.2) 
-				# inverse gamma function (according to wolfram alpha): g(x)^-1 = x^2.2
-				video_capture.set(1, frame_indicies[j])
-				success, layover_frame = video_capture.read()
+		# store the blurred image as a jpg in blurred_directory
+		cv2.imwrite(os.path.join(blurred_directory, video_name + "_blurred_%d.jpg" % sample_number), blurred_img)
 
-				inv_gamma = lambda x: x**2.2
-				inv_func = np.vectorize(inv_gamma)
-				inv_frame = inv_func(layover_frame)
-				print (j, inv_frame.shape)
-				blurred_imgs.append(inv_frame)
+if __name__ == '__main__':
 
-			# iterate through the blurred_imgs list and check for cut frames
-			differences = []
-			for k in range(len(blurred_imgs) - 1): 
-				diff = abs(blurred_imgs[k] - blurred_imgs[k+1])
-				differences.append(diff)
-			print (max(differences))
-				
+	# path containing vids
+	videos_path = "videos"
 
-			# iterate through all the inverse gamma'd frames, and take the summation and then the average
-			print("*********")
-			summation_of_frames= sum(blurred_imgs)/len(blurred_imgs)
-			print(summation_of_frames.shape)
+	# make sure these directories exist
+	target_directory = 'targets'
+	blurred_directory = 'blurred'
 
-			# apply gamma function on this summation average
-			gamma = lambda y: y**(1/2.2)
-			func = np.vectorize(gamma)
-			blurred_img = func(summation_of_frames)
+	num_samples_per_vid = 3
 
-			# store the blurred image as a jpg in blurred_directory
-			cv2.imwrite(os.path.join(blurred_directory, "blurred_img%d.jpg" % frame_indicies[i]), blurred_img)
-
-# get_blurred_images(video, 73)
+	for vid_name in os.listdir(videos_path):
+		path = os.path.join(videos_path, vid_name)
+		print(path)
+		get_blurred_images(path, 8, num_samples_per_vid)
 
 
 
