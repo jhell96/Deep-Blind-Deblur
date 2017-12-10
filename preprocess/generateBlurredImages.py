@@ -16,7 +16,6 @@ def get_blurred_images(video_file_path, average_frames, num_samples):
 	'''
 	video_capture = cv2.VideoCapture(video_file_path)
 	video_framecount = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
-	frame_indicies = [i for i in range(video_framecount)]
 	target_frame_indicies = np.random.choice(video_framecount - average_frames - 1, num_samples)
 
 
@@ -61,19 +60,20 @@ def get_blurred_images(video_file_path, average_frames, num_samples):
 if __name__ == '__main__':
 
 	# path containing vids
-	videos_path = "videos"
+	videos_path = "/home/jhellerstein96/disk/videos-flat"
 
 	# make sure these directories exist
-	target_directory = 'targets'
-	blurred_directory = 'blurred'
+	target_directory = '/home/jhellerstein96/disk/images/ytb/targets'
+	blurred_directory = '/home/jhellerstein96/disk/images/ytb/blurred'
 
-	num_samples_per_vid = 3
+	num_samples_per_vid = 100
+	blur_amount = 8
 
-	for vid_name in os.listdir(videos_path):
+	total = len(os.listdir(videos_path))
+	for i, vid_name in enumerate(os.listdir(videos_path)):
 		path = os.path.join(videos_path, vid_name)
-		print(path)
-		get_blurred_images(path, 8, num_samples_per_vid)
-
+		print(path, i, "of", total)
+		get_blurred_images(path, blur_amount, num_samples_per_vid)
 
 
 
