@@ -7,7 +7,7 @@
 *.o
 *.so
 *.h5
-
+*.pth
 model/deblurring-master/data/
 
 # Packages #
