@@ -29,7 +29,7 @@ class UnalignedDataset(BaseDataset):
         index_A = index % self.A_size
         B_path = self.B_paths[index % self.A_size]
         # print('(A, B) = (%d, %d)' % (index_A, index_B))
-        A_img = Image.open(A_path).convert('L')
+        A_img = Image.open(A_path).convert('RGB')
         B_img = Image.open(B_path).convert('RGB')
 
         A_img = self.transform(A_img)

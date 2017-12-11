@@ -2,7 +2,7 @@
 aspect_ratio: 1.0
 batchSize: 1
 checkpoints_dir: ./checkpoints
-dataroot: /home/jhellerstein96/data/images/gopro/train/GOPR0372_07_00/blur_gamma
+dataroot: /home/jhellerstein96/data/images/gopro/train/GOPR0884_11_00/blur_gamma
 dataset_mode: single
 display_id: 1
 display_port: 8097

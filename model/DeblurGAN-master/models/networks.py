@@ -136,7 +136,8 @@ class ResnetGenerator(nn.Module):
 		model += [nn.ReflectionPad2d(3)]
 		model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
 		model += [nn.Tanh()]
-
+		
+		model = [nn.DataParallel(x) for x in model]
 		self.model = nn.Sequential(*model)
 
 	def forward(self, input):
@@ -185,7 +186,7 @@ class ResnetBlock(nn.Module):
 			raise NotImplementedError('padding [%s] is not implemented' % padding_type)
 		conv_block += [nn.Conv2d(dim, dim, kernel_size=3, padding=p, bias=use_bias),
 					   norm_layer(dim)]
-
+		
 		return nn.Sequential(*conv_block)
 
 	def forward(self, x):
@@ -274,7 +275,7 @@ class UnetSkipConnectionBlock(nn.Module):
 				model = down + [submodule] + up + [nn.Dropout(0.5)]
 			else:
 				model = down + [submodule] + up
-
+		
 		self.model = nn.Sequential(*model)
 
 	def forward(self, x):
@@ -328,6 +329,7 @@ class NLayerDiscriminator(nn.Module):
 		if use_sigmoid:
 			sequence += [nn.Sigmoid()]
 
+		#self.b_level = 0
 		self.model = nn.Sequential(*sequence)
 
 	def forward(self, input):

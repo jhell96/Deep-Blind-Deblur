@@ -9,7 +9,8 @@
 *.h5
 *.pth
 model/deblurring-master/data/
-
+model/DeblurGAN-master/results/
+model/DeblurGAN-master/checkpoints/
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source

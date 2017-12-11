@@ -8,6 +8,7 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 from .losses import init_loss
+import cv2
 
 try:
 	xrange          # Python2
@@ -70,6 +71,10 @@ class ConditionalGAN(BaseModel):
 		self.input_A.resize_(input_A.size()).copy_(input_A)
 		self.input_B.resize_(input_B.size()).copy_(input_B)
 		self.image_paths = input['A_paths' if AtoB else 'B_paths']
+
+		#b_level = cv2.Laplacian(input_A, cv2.CV_64F).var()
+		#self.netD.b_level = b_level
+		#self.netG.b_level = b_level
 
 	def forward(self):
 		self.real_A = Variable(self.input_A)
