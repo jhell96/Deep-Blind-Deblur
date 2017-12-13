@@ -137,7 +137,7 @@ class ResnetGenerator(nn.Module):
 		model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
 		model += [nn.Tanh()]
 		
-		model = [nn.DataParallel(x) for x in model]
+		#model = [nn.DataParallel(x) for x in model]
 		self.model = nn.Sequential(*model)
 
 	def forward(self, input):

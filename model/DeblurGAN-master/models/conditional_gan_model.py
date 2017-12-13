@@ -8,7 +8,6 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 from .losses import init_loss
-import cv2
 
 try:
 	xrange          # Python2
@@ -100,6 +99,12 @@ class ConditionalGAN(BaseModel):
 		self.loss_G_GAN = self.discLoss.get_g_loss(self.netD, self.real_A, self.fake_B)
 		# Second, G(A) = B
 		self.loss_G_Content = self.contentLoss.get_loss(self.fake_B, self.real_B) * self.opt.lambda_A
+
+		# "Blurr loss"
+		#kernel_laplace = torch.from_numpy(np.array([[0, 1, 0],[1, -4, 1],[0, 1, 0]])).cuda()
+		#laplacian_var = Variable(torch.var(torch.conv2(self.fake_B, kernel_laplace)).cuda(), requires_grad=True)
+
+		#blur_loss = 1./100000 * (laplacian_var - 1100) **2
 
 		self.loss_G = self.loss_G_GAN + self.loss_G_Content
 
